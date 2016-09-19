@@ -1,0 +1,22 @@
+# A simple Vagrant File to provision an instance on AWS and deploy an application server
+# Author: Pooja Shah, Prajakta Morale
+VAGRANTFILE_API_VERSION = "2"
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+    # A standard Ubuntu 64bit box
+    config.vm.box = "hashicorp/precise64"
+    # Configuring AWS provider
+    config.vm.provider :aws do |aws, override|
+      aws.access_key_id = ENV['AWS_KEY_ID']
+      aws.secret_access_key =  ENV['AWS_SECRET']
+      aws.keypair_name = ENV['AWS_KEYNAME']
+      aws.ami = "ami-d732f0b7"
+      aws.region = "us-west-2"
+      aws.instance_type = "t2.micro"
+      aws.security_groups= ENV['AWS_SECURITY_GROUP']
+      override.vm.box = "dummy"
+      override.ssh.username = "ubuntu"
+      override.ssh.private_key_path = ENV['AWS_KEYPATH']
+    end
+    # Running custom script to install apache server
+    config.vm.provision "shell", path: "web_app/apache2.sh"
+end

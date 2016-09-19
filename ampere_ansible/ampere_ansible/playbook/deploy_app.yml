@@ -1,0 +1,32 @@
+# Author: Prajakta Morale
+# This playbook will deploy the Nginx server & application over it.
+
+---
+- hosts: all
+  remote_user: ubuntu
+  become: yes
+  become_user: ubuntu
+  become_method: sudo
+  tasks:
+    - name: NGINX | Updating apt cache
+      become: true
+      become_user: root
+      apt:
+        update_cache: yes
+
+    - name: NGINX | Installing NGINX
+      become: true
+      become_user: root
+      apt:
+        pkg: nginx
+        state: latest
+
+    - name: copy
+      copy: src=../web_app/index.html dest=/usr/share/nginx/html/
+      become: true
+      become_user: root
+
+    - name: restart nginx
+      service: name=nginx state=restarted
+      become: true
+      become_user: root

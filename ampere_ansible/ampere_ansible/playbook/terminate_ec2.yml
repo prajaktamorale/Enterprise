@@ -1,0 +1,22 @@
+# Author: Pooja Shah
+# This playbook will deploy the nginx server & deploy the web app
+
+---
+- hosts: all
+  gather_facts: True
+  connection: local
+  vars:
+    - region: 'us-west-2'
+  tasks:
+    - name: Gather EC2 facts
+      local_action: ec2_facts
+
+    - debug: var=hostvars[inventory_hostname]
+    - debug: msg="{{ hostvars[inventory_hostname] }}"
+
+    - name: Terminate instances
+      local_action: ec2
+        state='absent'
+        instance_ids='{{ ec2_id }}'
+        region='{{ region }}'
+        wait=True
